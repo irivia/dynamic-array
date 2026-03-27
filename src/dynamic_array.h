@@ -21,12 +21,12 @@ typedef struct {
 #define da_count(da)    (da_metadata(da))->count
 #define da_cap(da)      (da_metadata(da))->cap
 
-#define da_alloc(da, capac)                                                     \
-    do {                                                                        \
-        DA_MetaData* m = malloc(sizeof(DA_MetaData) + sizeof(*(da)) * (capac)); \
-        m->count = 0;                                                           \
-        m->cap = (capac);                                                       \
-        (da) = da_data(m);                                                      \
+#define da_alloc(da, capacity)                                                     \
+    do {                                                                           \
+        DA_MetaData* m = malloc(sizeof(DA_MetaData) + sizeof(*(da)) * (capacity)); \
+        m->count = 0;                                                              \
+        m->cap = (capacity);                                                       \
+        (da) = da_data(m);                                                         \
     } while (0)
 
 #define da_resize(da, factor)                                           \
