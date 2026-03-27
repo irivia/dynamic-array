@@ -14,9 +14,12 @@ int main(void)
         printf("%d\n", arr[i]);
     }
 
-    da_free(arr);
-
     printf("Arr: %p\n", (void*)arr);
+
+    printf("Popped: %d\n", da_pop(arr));
+    printf("Popped: %d\n", da_pop(arr));
+
+    da_free(arr);
 
     return 0;
 }
