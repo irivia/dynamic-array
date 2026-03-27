@@ -91,9 +91,21 @@ static inline void* dynamic_array_remove(void *da, size_t index, bool shift)
     return DA_OFFSET(da, md->count);
 }
 
-#define da_pop(da) dynamic_array_remove(da, da_count(da) - 1, false)
-#define da_remove(da, i) dynamic_array_remove(da, i, false)
-#define da_ordered_remove(da, i) dynamic_array_remove(da, i, true)
+#if __STDC_VERSION__ >= 202311L
+    #define DA_TYPE_OF typeof
+#elif defined(__GNUC__)
+    #define DA_TYPE_OF __typeof__
+#endif
+
+#ifdef DA_TYPE_OF
+    #define da_pop(da)               (*(DA_TYPE_OF(da))dynamic_array_remove(da, da_count(da) - 1, false))
+    #define da_remove(da, i)         (*(DA_TYPE_OF(da))dynamic_array_remove(da, i, false))
+    #define da_ordered_remove(da, i) (*(DA_TYPE_OF(da))dynamic_array_remove(da, i, true))
+#else
+    #define da_pop(type, da)               (*(type*)dynamic_array_remove(da, da_count(da) - 1, false))
+    #define da_remove(type, da, i)         (*(type*)dynamic_array_remove(da, i, false))
+    #define da_ordered_remove(type, da, i) (*(type*)dynamic_array_remove(da, i, true))
+#endif
 
 #define da_clear(da) do { da_count(da) = 0; } while (0)
 
