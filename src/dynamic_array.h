@@ -38,6 +38,7 @@ typedef struct {
     do {                                                                        \
         DA_MetaData* m = da_metadata(da);                                       \
         m->cap *= (factor);                                                     \
+        if (m->cap < DA_INITIAL_CAPACITY) m->cap = DA_INITIAL_CAPACITY;         \
         m = (DA_MetaData*)realloc(m, sizeof(DA_MetaData) + m->typesz * m->cap); \
         (da) = da_data(m);                                                      \
     } while (0)
