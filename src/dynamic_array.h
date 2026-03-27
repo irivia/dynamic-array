@@ -67,7 +67,7 @@ static inline void* dynamic_array_remove(void *da, size_t index, bool shift)
     if (md->count == 0) return NULL;
     if (index >= md->count) index = md->count - 1;
 
-    if (md->count / 3 < md->cap) {
+    if (md->count < md->cap / 3) {
         da_resize(da, 0.5);
     }
 
