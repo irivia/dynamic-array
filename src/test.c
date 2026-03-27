@@ -10,8 +10,16 @@ int main(void)
     da_push(arr, 67);
     da_push(arr, 80085);
 
-    for (size_t i = 0; i < da_count(arr); i++) {
-        printf("%d\n", arr[i]);
+    da_foreach(arr, batman) {
+        printf("%d\n", *batman);
+    }
+
+    da_foreach(arr, batman) {
+        *batman *= 10;
+    }
+
+    da_foreach(arr, batman) {
+        printf("%d\n", *batman);
     }
 
     printf("Arr: %p\n", (void*)arr);
