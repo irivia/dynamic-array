@@ -101,10 +101,14 @@ static inline void* dynamic_array_remove(void *da, size_t index, bool shift)
     #define da_pop(da)               (*(DA_TYPE_OF(da))dynamic_array_remove(da, da_count(da) - 1, false))
     #define da_remove(da, i)         (*(DA_TYPE_OF(da))dynamic_array_remove(da, i, false))
     #define da_ordered_remove(da, i) (*(DA_TYPE_OF(da))dynamic_array_remove(da, i, true))
+    #define da_foreach(da, in) \
+        for (DA_TYPE_OF(da) in = (da); in < &(da)[da_count(da)]; in++)
 #else
     #define da_pop(type, da)               (*(type*)dynamic_array_remove(da, da_count(da) - 1, false))
     #define da_remove(type, da, i)         (*(type*)dynamic_array_remove(da, i, false))
     #define da_ordered_remove(type, da, i) (*(type*)dynamic_array_remove(da, i, true))
+    #define da_foreach(type, da, in) \
+        for (type *in = (da); in < &(da)[da_count(da)]; in++)
 #endif
 
 #define da_clear(da) do { da_count(da) = 0; } while (0)
