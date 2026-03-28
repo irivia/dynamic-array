@@ -27,7 +27,7 @@ typedef struct {
 
 #define da_alloc(da, capacity)                                                                   \
     do {                                                                                         \
-        DA_MetaData* m = (DA_MetaData*)malloc(sizeof(DA_MetaData) + sizeof(*(da)) * (capacity)); \
+        DA_MetaData *m = (DA_MetaData*)malloc(sizeof(DA_MetaData) + sizeof(*(da)) * (capacity)); \
         m->count = 0;                                                                            \
         m->cap = (capacity);                                                                     \
         m->typesz = sizeof(*(da));                                                               \
@@ -36,7 +36,7 @@ typedef struct {
 
 #define da_resize(da, factor)                                                   \
     do {                                                                        \
-        DA_MetaData* m = da_metadata(da);                                       \
+        DA_MetaData *m = da_metadata(da);                                       \
         m->cap *= (factor);                                                     \
         if (m->cap < DA_INITIAL_CAPACITY) m->cap = DA_INITIAL_CAPACITY;         \
         m = (DA_MetaData*)realloc(m, sizeof(DA_MetaData) + m->typesz * m->cap); \
