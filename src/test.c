@@ -10,17 +10,14 @@ int main(void)
     da_push(arr, 67);
     da_push(arr, 80085);
 
-    da_foreach(arr, batman) {
+    da_foreach(arr, batman)
         printf("%d\n", *batman);
-    }
 
-    da_foreach(arr, batman) {
+    da_foreach(arr, batman)
         *batman *= 10;
-    }
 
-    da_foreach(arr, batman) {
+    da_foreach(arr, batman)
         printf("%d\n", *batman);
-    }
 
     printf("Arr: %p\n", (void*)arr);
 
