@@ -10,21 +10,38 @@ int main(void)
     da_push(arr, 67);
     da_push(arr, 80085);
 
-    da_foreach(arr, batman)
-        printf("%d\n", *batman);
+    da_print(arr, "%d");
+
+    for (int i = 0; i < 490; i++)
+        da_push(arr, i);
+
+    da_print(arr, "%d");
 
     da_foreach(arr, batman)
         *batman *= 10;
 
-    da_foreach(arr, batman)
-        printf("%d\n", *batman);
+    da_print(arr, "%d");
 
     printf("Arr: %p\n", (void*)arr);
 
     printf("Popped: %d\n", da_pop(arr));
     printf("Popped: %d\n", da_pop(arr));
 
-    da_free(arr);
+    printf("arr[3]: %d\n", arr[3]);
+    printf("Removed: %d\n", da_remove(arr, 3));
+
+    da_print(arr, "%d");
+
+    printf("arr[2]: %d\n", arr[2]);
+    printf("Removed: %d\n", da_ordered_remove(arr, 2));
+
+    da_print(arr, "%d");
+
+    for (size_t i = 0; i < 330; i++) {
+        (void)da_pop(arr);
+    }
+
+    da_print(arr, "%d");
 
     return 0;
 }
