@@ -122,4 +122,15 @@ static inline void* dynamic_array_remove(void *da, size_t index, bool shift)
         }                                                       \
     } while (0)
 
+#define da_print(da, fmt)                                                                                                               \
+    do {                                                                                                                                \
+        printf("<address: %p, count: %zu, capacity: %zu, type size: %zu>\n",                                                            \
+            (void*)da_metadata(da), da_count(da), da_cap(da), da_typesz(da));                                                           \
+        printf("[ ");                                                                                                                   \
+        da_foreach(da, item) {                                                                                                          \
+            printf(fmt" ", *item);                                                                                                      \
+        }                                                                                                                               \
+        printf("]\n");                                                                                                                  \
+    } while (0)
+
 #endif // DYNAMIC_ARRAY_H__
