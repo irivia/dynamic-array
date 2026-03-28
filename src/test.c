@@ -1,5 +1,7 @@
 #include <stdio.h>
+#define DA_INITIAL_CAPACITY 10
 #include "dynamic_array.h"
+
 
 int main(void)
 {
@@ -12,7 +14,7 @@ int main(void)
 
     da_print(arr, "%d");
 
-    for (int i = 0; i < 490; i++)
+    for (int i = 0; i < 30; i++)
         da_push(arr, i);
 
     da_print(arr, "%d");
@@ -21,8 +23,6 @@ int main(void)
         *batman *= 10;
 
     da_print(arr, "%d");
-
-    printf("Arr: %p\n", (void*)arr);
 
     printf("Popped: %d\n", da_pop(arr));
     printf("Popped: %d\n", da_pop(arr));
@@ -37,7 +37,7 @@ int main(void)
 
     da_print(arr, "%d");
 
-    for (size_t i = 0; i < 330; i++) {
+    for (size_t i = 0; i < 19; i++) {
         (void)da_pop(arr);
     }
 
