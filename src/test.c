@@ -58,5 +58,9 @@ int main(void)
     da_insert(arr, 333, da_count(arr) - 1);
     da_print(arr, "%d");
 
+    int arr2[] = {0, 1, 9, 6, 3};
+    int *new = da_from_arr(arr2, sizeof(arr2) / sizeof(arr2[0]));
+    da_print(new, "%d");
+
     return 0;
 }

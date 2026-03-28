@@ -136,6 +136,23 @@ static inline void* dynamic_array_remove(void *da, size_t index, bool shift)
         }                                                       \
     } while (0)
 
+static inline void* dynamic_array_from_regular_array(void *arr, size_t count, size_t typesz)
+{
+    if (arr == NULL || count == 0) return NULL;
+
+    size_t total_bytes = count * typesz;
+    DA_MetaData *md = (DA_MetaData*)malloc(sizeof(DA_MetaData) + total_bytes);
+    md->cap = count;
+    md->count = count;
+    md->typesz = typesz;
+
+    memcpy(da_data(md), arr, total_bytes);
+
+    return da_data(md);
+}
+
+#define da_from_arr(arr, arr_count) dynamic_array_from_regular_array(arr, arr_count, sizeof(*(arr)));
+
 #define da_print(da, fmt)                                                                                                               \
     do {                                                                                                                                \
         printf("<address: %p, count: %zu, capacity: %zu, type size: %zu>\n",                                                            \
