@@ -57,6 +57,19 @@ typedef struct {
         da_count(da) += 1;                                     \
     } while (0)
 
+#define da_insert(da, item, index)                                           \
+    do {                                                                     \
+        if ((da) == NULL || (index) >= da_count(da)) {                       \
+            da_push(da, item);                                               \
+            break;                                                           \
+        }                                                                    \
+        if (da_count(da) >= da_cap(da)) da_resize(da, 2);                    \
+        size_t move_count = da_count(da) - (index);                          \
+        memmove(&(da)[(index)+1], &(da)[index], move_count * sizeof(*(da))); \
+        (da)[index] = (item);                                                \
+        da_count(da) += 1;                                                   \
+    } while (0)
+
 #define DA_OFFSET(da, i) ((uint8_t*)(da) + (i) * da_typesz(da))
 
 static inline void* dynamic_array_remove(void *da, size_t index, bool shift)

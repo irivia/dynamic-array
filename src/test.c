@@ -42,5 +42,21 @@ int main(void)
 
     da_print(arr, "%d");
 
+    da_insert(arr, 96, 0);
+    printf("Inserted 96 at 0\n");
+    da_print(arr, "%d");
+
+    da_insert(arr,  4, 5);
+    printf("Inserted 24 at 5\n");
+    da_print(arr, "%d");
+
+    printf("Inserted 76 at %zu\n", da_count(arr));
+    da_insert(arr, 76, da_count(arr));
+    da_print(arr, "%d");
+
+    printf("Inserted 333 at %zu\n", da_count(arr) - 1);
+    da_insert(arr, 333, da_count(arr) - 1);
+    da_print(arr, "%d");
+
     return 0;
 }
