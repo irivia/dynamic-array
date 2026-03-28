@@ -2,7 +2,6 @@
 #define DA_INITIAL_CAPACITY 10
 #include "dynamic_array.h"
 
-
 int main(void)
 {
     int *arr = NULL;
@@ -28,12 +27,12 @@ int main(void)
     printf("Popped: %d\n", da_pop(arr));
 
     printf("arr[3]: %d\n", arr[3]);
-    printf("Removed: %d\n", da_remove(arr, 3));
+    printf("Removed: %d\n", da_fast_remove(arr, 3));
 
     da_print(arr, "%d");
 
     printf("arr[2]: %d\n", arr[2]);
-    printf("Removed: %d\n", da_ordered_remove(arr, 2));
+    printf("Removed: %d\n", da_remove(arr, 2));
 
     da_print(arr, "%d");
 

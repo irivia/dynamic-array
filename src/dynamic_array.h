@@ -49,12 +49,12 @@ typedef struct {
         (da) = NULL;           \
     } while (0)
 
-#define da_push(da, item)                                                 \
-    do {                                                                  \
-        if ((da) == NULL) da_alloc(da, DA_INITIAL_CAPACITY);              \
-        else if (da_count(da) >= da_cap(da)) da_resize(da, 2);            \
-        (da)[da_count(da)] = (item);                                      \
-        da_count(da) += 1;                                                \
+#define da_push(da, item)                                      \
+    do {                                                       \
+        if ((da) == NULL) da_alloc(da, DA_INITIAL_CAPACITY);   \
+        else if (da_count(da) >= da_cap(da)) da_resize(da, 2); \
+        (da)[da_count(da)] = (item);                           \
+        da_count(da) += 1;                                     \
     } while (0)
 
 #define DA_OFFSET(da, i) ((uint8_t*)(da) + (i) * da_typesz(da))
@@ -99,14 +99,15 @@ static inline void* dynamic_array_remove(void *da, size_t index, bool shift)
 
 #ifdef DA_TYPE_OF
     #define da_pop(da)               (*(DA_TYPE_OF(da))dynamic_array_remove(da, da_count(da) - 1, false))
-    #define da_remove(da, i)         (*(DA_TYPE_OF(da))dynamic_array_remove(da, i, false))
-    #define da_ordered_remove(da, i) (*(DA_TYPE_OF(da))dynamic_array_remove(da, i, true))
+    #define da_remove(da, i)         (*(DA_TYPE_OF(da))dynamic_array_remove(da, i, true))
+    /* No shifting, replaces the last element with the element to be removed */
+    #define da_fast_remove(da, i)    (*(DA_TYPE_OF(da))dynamic_array_remove(da, i, false))
     #define da_foreach(da, in) \
         for (DA_TYPE_OF(da) in = (da); in < &(da)[da_count(da)]; in++)
 #else
     #define da_pop(type, da)               (*(type*)dynamic_array_remove(da, da_count(da) - 1, false))
-    #define da_remove(type, da, i)         (*(type*)dynamic_array_remove(da, i, false))
-    #define da_ordered_remove(type, da, i) (*(type*)dynamic_array_remove(da, i, true))
+    #define da_remove(type, da, i)         (*(type*)dynamic_array_remove(da, i, true))
+    #define da_fast_remove(type, da, i)    (*(type*)dynamic_array_remove(da, i, false))
     #define da_foreach(type, da, in) \
         for (type *in = (da); in < &(da)[da_count(da)]; in++)
 #endif
