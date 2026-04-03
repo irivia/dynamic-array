@@ -6,8 +6,18 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <assert.h>
+
+#if defined(__GNUC__) || defined(__clang__)
+    #define DA_ALWAYS_INLINE __attribute__((always_inline)) static inline
+#elif defined(_MSC_VER) && !defined(__llvm__) && !defined(__INTEL_COMPILER)
+    #define DA_ALWAYS_INLINE __forceinline
+#else
+    #define DA_ALWAYS_INLINE static inline
+#endif
 
 #ifndef DA_INITIAL_CAPACITY
     #define DA_INITIAL_CAPACITY 64
@@ -28,6 +38,10 @@ typedef struct {
 #define da_alloc(da, capacity)                                                                   \
     do {                                                                                         \
         DA_MetaData *m = (DA_MetaData*)malloc(sizeof(DA_MetaData) + sizeof(*(da)) * (capacity)); \
+        if (m == NULL) {                                                                         \
+            (da) = NULL;                                                                         \
+            break;                                                                               \
+        }                                                                                        \
         m->count = 0;                                                                            \
         m->cap = (capacity);                                                                     \
         m->typesz = sizeof(*(da));                                                               \
@@ -36,10 +50,17 @@ typedef struct {
 
 #define da_resize(da, factor)                                                   \
     do {                                                                        \
+        assert((da) != NULL && "dynamic array can't be null");                  \
         DA_MetaData *m = da_metadata(da);                                       \
         m->cap *= (factor);                                                     \
         if (m->cap < DA_INITIAL_CAPACITY) m->cap = DA_INITIAL_CAPACITY;         \
+        DA_MetaData *m_old = m;                                                 \
         m = (DA_MetaData*)realloc(m, sizeof(DA_MetaData) + m->typesz * m->cap); \
+        if (m == NULL) {                                                        \
+            m = m_old;                                                          \
+            fprintf(stderr, "Reallocing %s failed\n", #da);                     \
+            break;                                                              \
+        }                                                                       \
         (da) = da_data(m);                                                      \
     } while (0)
 
@@ -49,12 +70,13 @@ typedef struct {
         (da) = NULL;           \
     } while (0)
 
-#define da_push(da, item)                                      \
-    do {                                                       \
-        if ((da) == NULL) da_alloc(da, DA_INITIAL_CAPACITY);   \
-        else if (da_count(da) >= da_cap(da)) da_resize(da, 2); \
-        (da)[da_count(da)] = (item);                           \
-        da_count(da) += 1;                                     \
+#define da_push(da, item)                                              \
+    do {                                                               \
+        if ((da) == NULL) da_alloc(da, DA_INITIAL_CAPACITY);           \
+        else if (da_count(da) >= da_cap(da)) da_resize(da, 2);         \
+        assert((da) != NULL && "Allocating the dynamic array failed"); \
+        (da)[da_count(da)] = (item);                                   \
+        da_count(da) += 1;                                             \
     } while (0)
 
 #define da_insert(da, item, index)                                           \
@@ -72,7 +94,7 @@ typedef struct {
 
 #define DA_OFFSET(da, i) ((uint8_t*)(da) + (i) * da_typesz(da))
 
-static inline void* dynamic_array_remove(void *da, size_t index, bool shift)
+DA_ALWAYS_INLINE void* dynamic_array_remove(void *da, size_t index, bool shift)
 {
     if (da == NULL) return NULL;
 
@@ -106,7 +128,7 @@ static inline void* dynamic_array_remove(void *da, size_t index, bool shift)
 
 #if __STDC_VERSION__ >= 202311L
     #define DA_TYPE_OF typeof
-#elif defined(__GNUC__)
+#elif defined(__GNUC__) || defined(__clang__)
     #define DA_TYPE_OF __typeof__
 #endif
 
@@ -136,7 +158,7 @@ static inline void* dynamic_array_remove(void *da, size_t index, bool shift)
         }                                                       \
     } while (0)
 
-static inline void* dynamic_array_from_regular_array(void *arr, size_t count, size_t typesz)
+DA_ALWAYS_INLINE void* dynamic_array_from_regular_array(void *arr, size_t count, size_t typesz)
 {
     if (arr == NULL || count == 0) return NULL;
 
@@ -163,5 +185,7 @@ static inline void* dynamic_array_from_regular_array(void *arr, size_t count, si
         }                                                                                                                               \
         printf("]\n");                                                                                                                  \
     } while (0)
+
+#undef DA_ALWAYS_INLINE
 
 #endif // DYNAMIC_ARRAY_H__
