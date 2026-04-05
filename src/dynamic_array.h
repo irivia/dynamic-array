@@ -164,6 +164,7 @@ DA_ALWAYS_INLINE void* dynamic_array_from_regular_array(void *arr, size_t count,
 
     size_t total_bytes = count * typesz;
     DA_MetaData *md = (DA_MetaData*)malloc(sizeof(DA_MetaData) + total_bytes);
+    assert(md != NULL && "Allocating dynamic array failed in dynamic_array_from_regular_array");
     md->cap = count;
     md->count = count;
     md->typesz = typesz;
