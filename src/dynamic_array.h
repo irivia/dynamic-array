@@ -11,9 +11,11 @@
 #include <string.h>
 #include <assert.h>
 
+#define IS_MSVC() (defined(_MSC_VER) && !defined(__llvm__) && !defined(__INTEL_COMPILER))
+
 #if defined(__GNUC__) || defined(__clang__)
     #define DA_ALWAYS_INLINE __attribute__((always_inline)) static inline
-#elif defined(_MSC_VER) && !defined(__llvm__) && !defined(__INTEL_COMPILER)
+#elif IS_MSVC()
     #define DA_ALWAYS_INLINE __forceinline
 #else
     #define DA_ALWAYS_INLINE static inline
@@ -52,12 +54,14 @@ typedef struct {
     do {                                                                        \
         assert((da) != NULL && "dynamic array can't be null");                  \
         DA_MetaData *m = da_metadata(da);                                       \
+        size_t old_cap = m->cap;                                                \
         m->cap *= (factor);                                                     \
         if (m->cap < DA_INITIAL_CAPACITY) m->cap = DA_INITIAL_CAPACITY;         \
         DA_MetaData *m_old = m;                                                 \
         m = (DA_MetaData*)realloc(m, sizeof(DA_MetaData) + m->typesz * m->cap); \
         if (m == NULL) {                                                        \
             m = m_old;                                                          \
+            m->cap = old_cap;                                                   \
             fprintf(stderr, "Reallocing %s failed\n", #da);                     \
             break;                                                              \
         }                                                                       \
@@ -71,13 +75,14 @@ typedef struct {
         (da) = NULL;             \
     } while (0)
 
-#define da_push(da, item)                                              \
-    do {                                                               \
-        if ((da) == NULL) da_alloc(da, DA_INITIAL_CAPACITY);           \
-        else if (da_count(da) >= da_cap(da)) da_resize(da, 2);         \
-        assert((da) != NULL && "Allocating the dynamic array failed"); \
-        (da)[da_count(da)] = (item);                                   \
-        da_count(da) += 1;                                             \
+#define da_push(da, item)                                                         \
+    do {                                                                          \
+        if ((da) == NULL) da_alloc(da, DA_INITIAL_CAPACITY);                      \
+        else if (da_count(da) >= da_cap(da)) da_resize(da, 2);                    \
+        assert((da) != NULL && "Allocating the dynamic array failed");            \
+        assert(da_count(da) < da_cap(da) && "Resizing the dynamic array failed"); \
+        (da)[da_count(da)] = (item);                                              \
+        da_count(da) += 1;                                                        \
     } while (0)
 
 #define da_insert(da, item, index)                                           \
@@ -97,11 +102,14 @@ typedef struct {
 
 DA_ALWAYS_INLINE void* dynamic_array_remove(void *da, size_t index, bool shift)
 {
-    if (da == NULL) return NULL;
+    if (da == NULL) {
+        fprintf(stderr, "Expected dynamic array, got null pointer\n");
+        return NULL;
+    }
 
     DA_MetaData *md = da_metadata(da);
 
-    if (md->count == 0) return NULL;
+    if (md->count == 0) return da;
     if (index >= md->count) index = md->count - 1;
 
     if (md->count < md->cap / 3) {
@@ -129,7 +137,7 @@ DA_ALWAYS_INLINE void* dynamic_array_remove(void *da, size_t index, bool shift)
 
 #if __STDC_VERSION__ >= 202311L
     #define DA_TYPE_OF typeof
-#elif defined(__GNUC__) || defined(__clang__)
+#elif defined(__GNUC__) || defined(__clang__) || IS_MSVC()
     #define DA_TYPE_OF __typeof__
 #endif
 
@@ -153,9 +161,10 @@ DA_ALWAYS_INLINE void* dynamic_array_remove(void *da, size_t index, bool shift)
 /* Both have to be dynamic arrays from this library */
 #define da_copy(dest, src, n)                                   \
     do {                                                        \
+        if ((dest) == NULL || (src) == NULL) break;             \
         for (size_t i = 0; i < (n) && i < da_count(src); i++) { \
-            if (i < da_count(dest)) dest[i] = src[i];           \
-            else da_push(dest, src[i]);                         \
+            if (i < da_count(dest)) (dest)[i] = (src)[i];       \
+            else da_push(dest, (src)[i]);                       \
         }                                                       \
     } while (0)
 
