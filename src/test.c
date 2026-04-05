@@ -62,5 +62,8 @@ int main(void)
     int *new = da_from_arr(arr2, sizeof(arr2) / sizeof(arr2[0]));
     da_print(new, "%d");
 
+    da_free(arr);
+    da_free(new);
+
     return 0;
 }
