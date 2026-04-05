@@ -64,10 +64,11 @@ typedef struct {
         (da) = da_data(m);                                                      \
     } while (0)
 
-#define da_free(da)            \
-    do {                       \
-        free(da_metadata(da)); \
-        (da) = NULL;           \
+#define da_free(da)              \
+    do {                         \
+        if ((da) == NULL) break; \
+        free(da_metadata(da));   \
+        (da) = NULL;             \
     } while (0)
 
 #define da_push(da, item)                                              \
