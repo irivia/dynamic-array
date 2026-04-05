@@ -198,5 +198,6 @@ DA_ALWAYS_INLINE void* dynamic_array_from_regular_array(void *arr, size_t count,
     } while (0)
 
 #undef DA_ALWAYS_INLINE
+#undef IS_MSVC
 
 #endif // DYNAMIC_ARRAY_H__
