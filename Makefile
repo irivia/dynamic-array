@@ -7,9 +7,11 @@ BUILD=build
 BIN=test
 EXE=$(BUILD)/$(BIN)
 
-all: $(BUILD) $(EXE)
+.PHONY: clean run
 
-$(EXE): $(SRC) $(HEADERS)
+all: $(EXE)
+
+$(EXE): $(BUILD) $(SRC) $(HEADERS)
 	$(CC) $(CFLAGS) -o $(EXE) $(SRC) $(LFLAGS)
 
 run: $(EXE)
@@ -18,6 +20,5 @@ run: $(EXE)
 $(BUILD):
 	mkdir -p $(BUILD)
 
-.PHONY: clean
 clean:
 	rm -rf $(BUILD)
