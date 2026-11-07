@@ -1,7 +1,8 @@
 CC=gcc
+STD=-std=c23
 SRC=$(wildcard ./src/*.c)
 HEADERS=$(wildcard ./src/*.h)
-CFLAGS=-O3 -Werror -Wall -Wextra -pedantic
+CFLAGS=-O3 -Werror -Wall -Wextra $(STD)
 LFLAGS=
 BUILD=build
 BIN=test
